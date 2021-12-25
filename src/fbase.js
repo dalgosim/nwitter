@@ -1,5 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -63,8 +65,26 @@ export const _signInWithPopup = (provider) => {
     });
 }
 
+export const writeDB = async (collectionName, data) => {
+    try {
+        const docRef = await addDoc(collection(dbService, collectionName), data);
+    } catch (e) {
+        console.error("Error adding document: ", e);
+    }
+}
+
+export const readDB = async (collectionName) => {
+    try {
+        const querySnapshot = await getDocs(collection(dbService, collectionName));
+        return querySnapshot;
+    } catch (e) {
+        console.error("Error reading  document: ", e);
+    }
+}
+
 initializeApp(firebaseConfig);
 
 export const firebaseGoogleProvider = GoogleAuthProvider;
 export const firebaseGithubProvider = GithubAuthProvider;
 export const authService = getAuth();
+export const dbService = getFirestore();
