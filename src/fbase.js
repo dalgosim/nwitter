@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { getAuth, updateProfile, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
+import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -65,6 +65,16 @@ export const _signInWithPopup = (provider) => {
     });
 }
 
+export const _updateProfile = async (profile) => {
+    await updateProfile(authService.currentUser, profile).then(() => {
+        // Profile updated!
+        // ...
+    }).catch((error) => {
+        // An error occurred
+        // ...
+    });
+}
+
 export const writeDB = async (collectionName, data) => {
     try {
         const docRef = await addDoc(collection(dbService, collectionName), data);
@@ -82,9 +92,10 @@ export const readDB = async (collectionName) => {
     }
 }
 
-initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
 
 export const firebaseGoogleProvider = GoogleAuthProvider;
 export const firebaseGithubProvider = GithubAuthProvider;
 export const authService = getAuth();
 export const dbService = getFirestore();
+export const storageService = getStorage();
