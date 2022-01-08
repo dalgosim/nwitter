@@ -1,8 +1,8 @@
 import { dbService } from "fbase";
-import { collection, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import Nweet from "components/Nweet";
 import NweetFactory from "components/NweetFactory";
+import { getDocs, collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
 
 
 const Home = ({userObj}) => {
@@ -18,8 +18,11 @@ const Home = ({userObj}) => {
 
     useEffect(() => {
         // getNweets();
-        const unsub = onSnapshot(collection(dbService, "nweet"), (snapshot) => {
-            console.log(snapshot.docs);
+        const nweetRef = collection(dbService, "nweet");
+        const q = query(nweetRef,
+            orderBy("createdAt", "desc")
+        );
+        const unsub = onSnapshot(q, (snapshot) => {
             const newArray = snapshot.docs.map((document) => ({
                 id: document.id,
                 ...document.data(),
@@ -29,14 +32,14 @@ const Home = ({userObj}) => {
     }, []);
 
     return (
-        <>
+        <div className="container">
             <NweetFactory userObj={userObj}/>
-            <div>
+            <div style={{marginTop: 30}}>
                 {nweets.map((nweet) => (
                     <Nweet key={nweet.id} nweetObj={nweet} isOwner={nweet.creatorId === userObj.uid} />
                 ))}
             </div>
-        </>
+        </div>
     );
 }
 
